@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="header">
+
+        <div class="logo">
+            <i class="fa-solid fa-headphones"></i>
+            <span>Music Player</span>
+        </div>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search songs or artists...">
+
+            <button id="searchBtn">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+
+        </div>
+
+    </header>
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="container">
+
+        <!-- ========= LEFT : PLAYLIST ========= -->
+
+        <aside class="playlist">
+
+            <div class="playlist-title">
+                <h2>Playlist</h2>
+            </div>
+
+            <div id="songList">
+
+                <!-- JS Render -->
+
+            </div>
+
+        </aside>
+
+
+        <!-- ========= CENTER ========= -->
+
+        <section class="player">
+
+            <div class="cover">
+
+                <img
+                    id="cover"
+                    src="assets/default-cover.jpg"
+                    alt="cover">
+
+            </div>
+
+            <div class="song-info">
+
+                <h2 id="title">
+                    No Song Selected
+                </h2>
+
+                <p id="artist">
+                    Unknown Artist
+                </p>
+
+            </div>
+
+
+            <!-- CONTROLS -->
+
+            <div class="controls">
+
+                <button id="prevBtn">
+                    <i class="fa-solid fa-backward-step"></i>
+                </button>
+
+                <button id="playBtn">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+
+                <button id="nextBtn">
+                    <i class="fa-solid fa-forward-step"></i>
+                </button>
+
+            </div>
+
+
+            <!-- PROGRESS -->
+
+            <div class="progress-container">
+
+                <span id="currentTime">
+                    0:00
+                </span>
+
+                <input
+                    type="range"
+                    id="progress"
+                    value="0"
+                    min="0"
+                    max="100">
+
+                <span id="duration">
+                    0:00
+                </span>
+
+            </div>
+
+
+            <!-- VOLUME -->
+
+            <div class="volume-container">
+
+                <i class="fa-solid fa-volume-high"></i>
+
+                <input
+                    type="range"
+                    id="volume"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="1">
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ================= AUDIO ================= -->
+
+    <audio id="audio"></audio>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        <p>
+            Music Player © 2026
+        </p>
+
+    </footer>
+
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>

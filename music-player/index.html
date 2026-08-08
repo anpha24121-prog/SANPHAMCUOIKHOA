@@ -5,17 +5,33 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <title>Music Player</title>
 
+    <link rel="icon" href="data:,">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../css/style.css">
+    <link
+        rel="stylesheet"
+        href="../css/style.css">
+
+    <link
+        rel="stylesheet"
+        href="../css/responsive.css">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 </head>
 
+
 <body>
+
 
     <!-- ================= HEADER ================= -->
 
@@ -28,6 +44,7 @@
             <span>Music Player</span>
 
         </div>
+
 
         <div class="search-box">
 
@@ -46,33 +63,48 @@
 
     </header>
 
+
+
     <!-- ================= MAIN ================= -->
 
     <main class="container">
 
-        <!-- Playlist -->
+
+        <!-- ================= LEFT ================= -->
 
         <aside class="playlist">
 
             <div class="playlist-title">
 
-                <h2>Playlist</h2>
+                <h2 id="listTitle">
+                    Top Songs
+                </h2>
 
             </div>
 
+
             <div id="songList">
 
-                <!-- JavaScript render -->
+                <!-- Songs loaded by JavaScript -->
+
+                <div class="loading">
+
+                    Loading songs...
+
+                </div>
 
             </div>
 
         </aside>
 
-        <!-- Player -->
+
+
+        <!-- ================= CENTER ================= -->
 
         <section class="player">
 
-            <!-- Cover -->
+
+            <!-- Album Cover -->
 
             <div class="cover">
 
@@ -83,41 +115,83 @@
 
             </div>
 
-            <!-- Song -->
+
+
+            <!-- Song information -->
 
             <div class="song-info">
 
                 <h2 id="title">
-
                     No Song Selected
-
                 </h2>
 
                 <p id="artist">
-
                     Unknown Artist
-
                 </p>
 
             </div>
 
-            <!-- Controls -->
+
+
+            <!-- ================= CONTROLS ================= -->
 
             <div class="controls">
 
-                <button id="prevBtn">
+
+                <!-- Previous -->
+
+                <button
+                    id="prevBtn"
+                    title="Previous">
 
                     <i class="fa-solid fa-backward-step"></i>
 
                 </button>
 
-                <button id="playBtn">
+
+
+                <!-- -10 seconds -->
+
+                <button
+                    id="back10Btn"
+                    title="Back 10 seconds">
+
+                    <i class="fa-solid fa-rotate-left"></i>
+
+                </button>
+
+
+
+                <!-- Play -->
+
+                <button
+                    id="playBtn"
+                    class="play-main"
+                    title="Play">
 
                     <i class="fa-solid fa-play"></i>
 
                 </button>
 
-                <button id="nextBtn">
+
+
+                <!-- +10 seconds -->
+
+                <button
+                    id="forward10Btn"
+                    title="Forward 10 seconds">
+
+                    <i class="fa-solid fa-rotate-right"></i>
+
+                </button>
+
+
+
+                <!-- Next -->
+
+                <button
+                    id="nextBtn"
+                    title="Next">
 
                     <i class="fa-solid fa-forward-step"></i>
 
@@ -125,36 +199,43 @@
 
             </div>
 
-            <!-- Progress -->
+
+
+            <!-- ================= PROGRESS ================= -->
 
             <div class="progress-container">
 
                 <span id="currentTime">
-
                     0:00
-
                 </span>
+
 
                 <input
                     type="range"
                     id="progress"
-                    value="0"
                     min="0"
-                    max="100">
+                    max="100"
+                    value="0"
+                    step="0.1">
+
 
                 <span id="duration">
-
-                    0:30
-
+                    0:00
                 </span>
 
             </div>
 
-            <!-- Volume -->
+
+
+            <!-- ================= VOLUME ================= -->
 
             <div class="volume-container">
 
-                <i class="fa-solid fa-volume-high"></i>
+                <i
+                    id="volumeIcon"
+                    class="fa-solid fa-volume-high">
+                </i>
+
 
                 <input
                     type="range"
@@ -166,31 +247,81 @@
 
             </div>
 
+
+
+            <!-- ================= LYRICS ================= -->
+
+            <div class="lyrics-section">
+
+                <h2>
+                    <i class="fa-solid fa-music"></i>
+                    Lyrics
+                </h2>
+
+
+                <div id="lyrics">
+
+                    Select a song to see lyrics.
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= RELATED ================= -->
+
+            <div class="related-section">
+
+                <h2>
+
+                    <i class="fa-solid fa-user-music"></i>
+
+                    More from this artist
+
+                </h2>
+
+
+                <div id="relatedSongs">
+
+                    <p>
+                        Select a song to see more songs
+                        from this artist.
+                    </p>
+
+                </div>
+
+            </div>
+
+
         </section>
+
 
     </main>
 
-    <!-- Audio -->
+
+
+    <!-- ================= AUDIO ================= -->
 
     <audio id="audio"></audio>
 
-    <!-- Footer -->
+
+
+    <!-- ================= FOOTER ================= -->
 
     <footer>
 
         <p>
-
             Music Player © 2026
-
         </p>
 
     </footer>
 
-    <!-- JavaScript -->
 
-    <script src="../js/api.js"></script>
 
-    <script src="../js/app.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/player.js"></script>
+<script src="../js/app.js"></script>
 
 </body>
 

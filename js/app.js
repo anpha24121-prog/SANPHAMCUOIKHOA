@@ -1,295 +1,599 @@
-/* ===========================================
-   ELEMENTS
-=========================================== */
+/* =====================================================
+   APP
+===================================================== */
 
-const songList = document.getElementById("songList");
-const cover = document.getElementById("cover");
-const title = document.getElementById("title");
-const artist = document.getElementById("artist");
 
-const audio = document.getElementById("audio");
+/* =====================================================
+   DOM
+===================================================== */
 
-const playBtn = document.getElementById("playBtn");
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
+const songList =
+    document.getElementById("songList");
 
-const searchBtn = document.getElementById("searchBtn");
-const searchInput = document.getElementById("searchInput");
 
-const progress = document.getElementById("progress");
-const volume = document.getElementById("volume");
+const relatedSongs =
+    document.getElementById("relatedSongs");
 
-const currentTime = document.getElementById("currentTime");
-const duration = document.getElementById("duration");
 
-/* ===========================================
-   GLOBAL
-=========================================== */
+const searchInput =
+    document.getElementById("searchInput");
+
+
+const searchBtn =
+    document.getElementById("searchBtn");
+
+
+const listTitle =
+    document.getElementById("listTitle");
+
+
+const lyrics =
+    document.getElementById("lyrics");
+
+
+
+/* =====================================================
+   APP STATE
+===================================================== */
 
 let songs = [];
-let currentIndex = 0;
-let isPlaying = false;
 
-/* ===========================================
-   LOAD WEBSITE
-=========================================== */
 
-window.onload = async () => {
 
-    songs = await getTopSongs();
+/* =====================================================
+   START APP
+===================================================== */
 
-    renderSongs(songs);
+window.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    if (songs.length > 0) {
+        await loadTopSongs();
 
-        loadSong(0);
+    }
+);
+
+
+
+/* =====================================================
+   LOAD TOP / INITIAL SONGS
+===================================================== */
+
+async function loadTopSongs() {
+
+    showLoading(
+        songList
+    );
+
+
+    const results =
+        await getTopSongs();
+
+
+    songs =
+        results;
+
+
+    if (
+        songs.length === 0
+    ) {
+
+        songList.innerHTML = `
+            <p class="error-message">
+                Could not load songs.
+            </p>
+        `;
+
+        return;
 
     }
 
-};
 
-/* ===========================================
+    listTitle.textContent =
+        "Top Songs";
+
+
+    setPlayerSongs(
+        songs
+    );
+
+
+    renderSongs(
+        songs
+    );
+
+}
+
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+async function performSearch() {
+
+    const keyword =
+        searchInput.value.trim();
+
+
+    if (!keyword) {
+
+        await loadTopSongs();
+
+        return;
+
+    }
+
+
+    showLoading(
+        songList
+    );
+
+
+    const results =
+        await searchSongs(
+            keyword
+        );
+
+
+    songs =
+        results;
+
+
+    if (
+        songs.length === 0
+    ) {
+
+        songList.innerHTML = `
+            <p class="error-message">
+                No songs found for
+                "${keyword}".
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    listTitle.textContent =
+        `Search: ${keyword}`;
+
+
+    setPlayerSongs(
+        songs
+    );
+
+
+    renderSongs(
+        songs
+    );
+
+}
+
+
+
+/* =====================================================
+   SEARCH BUTTON
+===================================================== */
+
+searchBtn.addEventListener(
+    "click",
+    performSearch
+);
+
+
+
+/* =====================================================
+   SEARCH ENTER
+===================================================== */
+
+searchInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter"
+        ) {
+
+            performSearch();
+
+        }
+
+    }
+);
+
+
+
+/* =====================================================
    RENDER SONGS
-=========================================== */
+===================================================== */
 
-function renderSongs(list) {
+function renderSongs(
+    songArray
+) {
 
     songList.innerHTML = "";
 
-    list.forEach((song, index) => {
 
-        songList.innerHTML += `
+    songArray.forEach(
+        (song, index) => {
 
-        <div class="song-item" data-index="${index}">
+            const item =
+                document.createElement(
+                    "div"
+                );
 
-            <img src="${song.artworkUrl100}" alt="cover">
 
-            <div class="song-text">
+            item.className =
+                "song-item";
 
-                <h4>${song.trackName}</h4>
 
-                <p>${song.artistName}</p>
+            let artwork =
+                song.artworkUrl100 ||
+                "https://placehold.co/100x100?text=Music";
 
-            </div>
+
+            artwork =
+                artwork.replace(
+                    "100x100",
+                    "200x200"
+                );
+
+
+            item.innerHTML = `
+
+                <img
+                    src="${artwork}"
+                    alt="${escapeHTML(
+                        song.trackName
+                    )}"
+                >
+
+                <div class="song-text">
+
+                    <h4>
+                        ${escapeHTML(
+                            song.trackName ||
+                            "Unknown Song"
+                        )}
+                    </h4>
+
+                    <p>
+                        ${escapeHTML(
+                            song.artistName ||
+                            "Unknown Artist"
+                        )}
+                    </p>
+
+                </div>
+
+            `;
+
+
+            /*
+               Click song
+            */
+
+            item.addEventListener(
+                "click",
+                async () => {
+
+                    currentSongIndex =
+                        index;
+
+
+                    setPlayerSongs(
+                        songArray
+                    );
+
+
+                    loadSong(
+                        song,
+                        index
+                    );
+
+
+                    audio.play();
+
+
+                    /*
+                       Get related songs
+                    */
+
+                    await loadRelatedSongs(
+                        song.artistId,
+                        song.artistName
+                    );
+
+                }
+            );
+
+
+            songList.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   RELATED SONGS
+===================================================== */
+
+async function loadRelatedSongs(
+    artistId,
+    artistName
+) {
+
+    if (!artistId) {
+
+        relatedSongs.innerHTML = `
+            <p>
+                Artist information unavailable.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    relatedSongs.innerHTML = `
+        <p>
+            Loading more songs from
+            ${escapeHTML(
+                artistName
+            )}...
+        </p>
+    `;
+
+
+    const results =
+        await getArtistSongs(
+            artistId
+        );
+
+
+    /*
+       Don't show the currently selected
+       song as the only result.
+    */
+
+    const filtered =
+        results.filter(
+            song =>
+                song.previewUrl
+        );
+
+
+    if (
+        filtered.length === 0
+    ) {
+
+        relatedSongs.innerHTML = `
+            <p>
+                No related songs found.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    renderRelatedSongs(
+        filtered,
+        artistName
+    );
+
+}
+
+
+
+/* =====================================================
+   RENDER RELATED SONGS
+===================================================== */
+
+function renderRelatedSongs(
+    songArray,
+    artistName
+) {
+
+    relatedSongs.innerHTML = "";
+
+
+    songArray.forEach(
+        song => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "related-song";
+
+
+            let artwork =
+                song.artworkUrl100 ||
+                "https://placehold.co/80x80?text=Music";
+
+
+            artwork =
+                artwork.replace(
+                    "100x100",
+                    "200x200"
+                );
+
+
+            item.innerHTML = `
+
+                <img
+                    src="${artwork}"
+                    alt="${escapeHTML(
+                        song.trackName
+                    )}"
+                >
+
+                <div>
+
+                    <h4>
+                        ${escapeHTML(
+                            song.trackName
+                        )}
+                    </h4>
+
+                    <p>
+                        ${escapeHTML(
+                            song.artistName
+                        )}
+                    </p>
+
+                </div>
+
+                <i class="fa-solid fa-play"></i>
+
+            `;
+
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    /*
+                       Add related song to
+                       current player list
+                    */
+
+                    songs =
+                        songArray;
+
+
+                    setPlayerSongs(
+                        songs
+                    );
+
+
+                    const index =
+                        songs.indexOf(
+                            song
+                        );
+
+
+                    loadSong(
+                        song,
+                        index
+                    );
+
+
+                    audio.play();
+
+                }
+            );
+
+
+            relatedSongs.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   LYRICS
+===================================================== */
+
+async function loadLyrics(
+    artistName,
+    songTitle
+) {
+
+    lyrics.innerHTML = `
+        <p class="lyrics-loading">
+            Loading lyrics...
+        </p>
+    `;
+
+
+    const result =
+        await getLyrics(
+            artistName,
+            songTitle
+        );
+
+
+    lyrics.textContent =
+        result;
+
+}
+
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+function showLoading(
+    element
+) {
+
+    element.innerHTML = `
+
+        <div class="loading">
+
+            <i class="fa-solid fa-spinner fa-spin"></i>
+
+            Loading...
 
         </div>
 
-        `;
-
-    });
-
-    document.querySelectorAll(".song-item").forEach(item => {
-
-        item.onclick = () => {
-
-            loadSong(item.dataset.index);
-
-            playSong();
-
-        };
-
-    });
+    `;
 
 }
 
-/* ===========================================
-   LOAD SONG
-=========================================== */
 
-function loadSong(index) {
 
-    currentIndex = Number(index);
-
-    const song = songs[currentIndex];
-
-    cover.src = song.artworkUrl100.replace("100x100", "600x600");
-
-    title.textContent = song.trackName;
-
-    artist.textContent = song.artistName;
-
-    audio.src = song.previewUrl;
-
-    document.querySelectorAll(".song-item").forEach(item => {
-
-        item.classList.remove("active");
-
-    });
-
-    document.querySelectorAll(".song-item")[currentIndex]?.classList.add("active");
-
-}
-
-/* ===========================================
-   PLAY
-=========================================== */
-
-function playSong() {
-
-    audio.play();
-
-    isPlaying = true;
-
-    playBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
-
-}
-
-/* ===========================================
-   PAUSE
-=========================================== */
-
-function pauseSong() {
-
-    audio.pause();
-
-    isPlaying = false;
-
-    playBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
-
-}
-
-/* ===========================================
-   PLAY BUTTON
-=========================================== */
-
-playBtn.onclick = () => {
-
-    if (!audio.src) return;
-
-    if (isPlaying) {
-
-        pauseSong();
-
-    } else {
-
-        playSong();
-
-    }
-
-};
-
-/* ===========================================
-   NEXT
-=========================================== */
-
-nextBtn.onclick = () => {
-
-    currentIndex++;
-
-    if (currentIndex >= songs.length) {
-
-        currentIndex = 0;
-
-    }
-
-    loadSong(currentIndex);
-
-    playSong();
-
-};
-
-/* ===========================================
-   PREVIOUS
-=========================================== */
-
-prevBtn.onclick = () => {
-
-    currentIndex--;
-
-    if (currentIndex < 0) {
-
-        currentIndex = songs.length - 1;
-
-    }
-
-    loadSong(currentIndex);
-
-    playSong();
-
-};
-
-/* ===========================================
-   SEARCH
-=========================================== */
-
-searchBtn.onclick = async () => {
-
-    const keyword = searchInput.value.trim();
-
-    if (keyword === "") return;
-
-    songs = await searchSongs(keyword);
-
-    renderSongs(songs);
-
-    if (songs.length > 0) {
-
-        loadSong(0);
-
-    }
-
-};
-
-/* ===========================================
-   PROGRESS
-=========================================== */
-
-audio.addEventListener("timeupdate", () => {
-
-    if (!audio.duration) return;
-
-    progress.value = (audio.currentTime / audio.duration) * 100;
-
-    currentTime.textContent = formatTime(audio.currentTime);
-
-    duration.textContent = formatTime(audio.duration);
-
-});
-
-/* ===========================================
-   SEEK
-=========================================== */
-
-progress.oninput = () => {
-
-    if (!audio.duration) return;
-
-    audio.currentTime =
-
-        (progress.value / 100) * audio.duration;
-
-};
-
-/* ===========================================
-   VOLUME
-=========================================== */
-
-volume.oninput = () => {
-
-    audio.volume = volume.value;
-
-};
-
-/* ===========================================
-   AUTO NEXT
-=========================================== */
-
-audio.onended = () => {
-
-    nextBtn.click();
-
-};
-
-/* ===========================================
-   FORMAT TIME
-=========================================== */
-
-function formatTime(time) {
-
-    const minute = Math.floor(time / 60);
-
-    const second = Math.floor(time % 60);
-
-    return `${minute}:${second < 10 ? "0" : ""}${second}`;
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+function escapeHTML(
+    text
+) {
+
+    if (!text) return "";
+
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }

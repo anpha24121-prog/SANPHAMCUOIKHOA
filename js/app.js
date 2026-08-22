@@ -1,86 +1,108 @@
 /* =====================================================
-   APP
+   MUSIC PLAYER APP
 ===================================================== */
+
+let songs = [];
+let currentIndex = 0;
 
 
 /* =====================================================
-   DOM
+   DOM ELEMENTS
 ===================================================== */
 
 const songList =
     document.getElementById("songList");
 
+const cover =
+    document.getElementById("cover");
 
-const relatedSongs =
-    document.getElementById("relatedSongs");
+const title =
+    document.getElementById("title");
 
+const artist =
+    document.getElementById("artist");
+
+const audio =
+    document.getElementById("audio");
+
+const playBtn =
+    document.getElementById("playBtn");
+
+const prevBtn =
+    document.getElementById("prevBtn");
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const back10Btn =
+    document.getElementById("back10Btn");
+
+const forward10Btn =
+    document.getElementById("forward10Btn");
+
+const progress =
+    document.getElementById("progress");
+
+const currentTime =
+    document.getElementById("currentTime");
+
+const duration =
+    document.getElementById("duration");
+
+const volume =
+    document.getElementById("volume");
 
 const searchInput =
     document.getElementById("searchInput");
 
-
 const searchBtn =
     document.getElementById("searchBtn");
 
-
-const listTitle =
-    document.getElementById("listTitle");
-
-
-const lyrics =
-    document.getElementById("lyrics");
+const favoriteBtn =
+    document.getElementById("favoriteBtn");
 
 
 
 /* =====================================================
-   APP STATE
+   LOAD INITIAL SONGS
 ===================================================== */
 
-let songs = [];
-
-
-
-/* =====================================================
-   START APP
-===================================================== */
-
-window.addEventListener(
+document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        await loadTopSongs();
+        await loadSongs();
 
     }
 );
 
 
-
 /* =====================================================
-   LOAD TOP / INITIAL SONGS
+   LOAD SONGS
 ===================================================== */
 
-async function loadTopSongs() {
+async function loadSongs() {
 
-    showLoading(
-        songList
-    );
+    songList.innerHTML = `
+        <div class="loading">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Loading songs...
+        </div>
+    `;
 
 
-    const results =
+    const result =
         await getTopSongs();
 
 
-    songs =
-        results;
+    songs = result || [];
 
 
-    if (
-        songs.length === 0
-    ) {
+    if (songs.length === 0) {
 
         songList.innerHTML = `
-            <p class="error-message">
-                Could not load songs.
+            <p>
+                No songs found.
             </p>
         `;
 
@@ -89,221 +111,130 @@ async function loadTopSongs() {
     }
 
 
-    listTitle.textContent =
-        "Top Songs";
-
-
-    setPlayerSongs(
-        songs
-    );
-
-
-    renderSongs(
-        songs
-    );
+    renderSongs();
 
 }
 
 
-
 /* =====================================================
-   SEARCH
+   RENDER SONG LIST
 ===================================================== */
 
-async function performSearch() {
-
-    const keyword =
-        searchInput.value.trim();
-
-
-    if (!keyword) {
-
-        await loadTopSongs();
-
-        return;
-
-    }
-
-
-    showLoading(
-        songList
-    );
-
-
-    const results =
-        await searchSongs(
-            keyword
-        );
-
-
-    songs =
-        results;
-
-
-    if (
-        songs.length === 0
-    ) {
-
-        songList.innerHTML = `
-            <p class="error-message">
-                No songs found for
-                "${keyword}".
-            </p>
-        `;
-
-        return;
-
-    }
-
-
-    listTitle.textContent =
-        `Search: ${keyword}`;
-
-
-    setPlayerSongs(
-        songs
-    );
-
-
-    renderSongs(
-        songs
-    );
-
-}
-
-
-
-/* =====================================================
-   SEARCH BUTTON
-===================================================== */
-
-searchBtn.addEventListener(
-    "click",
-    performSearch
-);
-
-
-
-/* =====================================================
-   SEARCH ENTER
-===================================================== */
-
-searchInput.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key === "Enter"
-        ) {
-
-            performSearch();
-
-        }
-
-    }
-);
-
-
-
-/* =====================================================
-   RENDER SONGS
-===================================================== */
-
-function renderSongs(
-    songArray
-) {
+function renderSongs() {
 
     songList.innerHTML = "";
 
 
-    songArray.forEach(
+    songs.forEach(
         (song, index) => {
 
+            if (!song.previewUrl) {
+                return;
+            }
+
+
             const item =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
 
             item.className =
                 "song-item";
 
 
-            let artwork =
-                song.artworkUrl100 ||
-                "https://placehold.co/100x100?text=Music";
-
-
-            artwork =
-                artwork.replace(
-                    "100x100",
-                    "200x200"
-                );
+            const isLiked =
+                typeof getFavorites === "function"
+                    ? getFavorites().some(
+                        favorite =>
+                            favorite.trackId ===
+                            song.trackId
+                    )
+                    : false;
 
 
             item.innerHTML = `
 
                 <img
-                    src="${artwork}"
-                    alt="${escapeHTML(
-                        song.trackName
-                    )}"
+                    src="${song.artworkUrl100}"
+                    alt="cover"
                 >
 
                 <div class="song-text">
 
                     <h4>
                         ${escapeHTML(
-                            song.trackName ||
-                            "Unknown Song"
+                            song.trackName
                         )}
                     </h4>
 
                     <p>
                         ${escapeHTML(
-                            song.artistName ||
-                            "Unknown Artist"
+                            song.artistName
                         )}
                     </p>
 
                 </div>
 
+
+                <button
+                    type="button"
+                    class="song-heart"
+                    title="Favorite"
+                >
+
+                    <i class="${
+                        isLiked
+                            ? "fa-solid"
+                            : "fa-regular"
+                    } fa-heart"></i>
+
+                </button>
+
             `;
 
 
-            /*
-               Click song
-            */
+            /* -----------------------------------------
+               CLICK SONG
+            ----------------------------------------- */
 
             item.addEventListener(
                 "click",
-                async () => {
+                event => {
 
-                    currentSongIndex =
-                        index;
+                    if (
+                        event.target.closest(
+                            ".song-heart"
+                        )
+                    ) {
 
+                        return;
 
-                    setPlayerSongs(
-                        songArray
-                    );
-
-
-                    loadSong(
-                        song,
-                        index
-                    );
+                    }
 
 
-                    audio.play();
+                    playSong(index);
+
+                }
+            );
 
 
-                    /*
-                       Get related songs
-                    */
+            /* -----------------------------------------
+               FAVORITE BUTTON
+            ----------------------------------------- */
 
-                    await loadRelatedSongs(
-                        song.artistId,
-                        song.artistName
+            const heartButton =
+                item.querySelector(
+                    ".song-heart"
+                );
+
+
+            heartButton.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    toggleFavorite(
+                        song
                     );
 
                 }
@@ -320,259 +251,684 @@ function renderSongs(
 }
 
 
-
 /* =====================================================
-   RELATED SONGS
+   PLAY SONG
 ===================================================== */
 
-async function loadRelatedSongs(
-    artistId,
-    artistName
-) {
+function playSong(index) {
 
-    if (!artistId) {
+    if (!songs[index]) {
+        return;
+    }
 
-        relatedSongs.innerHTML = `
-            <p>
-                Artist information unavailable.
-            </p>
-        `;
+
+    currentIndex =
+        index;
+
+
+    const song =
+        songs[index];
+
+
+    title.textContent =
+        song.trackName ||
+        "Unknown Song";
+
+
+    artist.textContent =
+        song.artistName ||
+        "Unknown Artist";
+
+
+    cover.src =
+        song.artworkUrl100
+            ? song.artworkUrl100.replace(
+                "100x100",
+                "500x500"
+            )
+            : "https://placehold.co/500x500";
+
+
+    if (!song.previewUrl) {
+
+        alert(
+            "This song does not have a preview."
+        );
 
         return;
 
     }
 
 
-    relatedSongs.innerHTML = `
-        <p>
-            Loading more songs from
-            ${escapeHTML(
-                artistName
-            )}...
-        </p>
-    `;
+    audio.src =
+        song.previewUrl;
 
 
-    const results =
-        await getArtistSongs(
-            artistId
+    audio.load();
+
+
+    updateFavoriteButton();
+
+
+    audio.play()
+        .then(
+            () => {
+
+                updatePlayButton(
+                    true
+                );
+
+            }
+        )
+        .catch(
+            error => {
+
+                console.error(
+                    "Audio error:",
+                    error
+                );
+
+            }
         );
-
-
-    /*
-       Don't show the currently selected
-       song as the only result.
-    */
-
-    const filtered =
-        results.filter(
-            song =>
-                song.previewUrl
-        );
-
-
-    if (
-        filtered.length === 0
-    ) {
-
-        relatedSongs.innerHTML = `
-            <p>
-                No related songs found.
-            </p>
-        `;
-
-        return;
-
-    }
-
-
-    renderRelatedSongs(
-        filtered,
-        artistName
-    );
 
 }
 
 
-
 /* =====================================================
-   RENDER RELATED SONGS
+   PLAY / PAUSE
 ===================================================== */
 
-function renderRelatedSongs(
-    songArray,
-    artistName
-) {
+playBtn.addEventListener(
+    "click",
+    () => {
 
-    relatedSongs.innerHTML = "";
+        if (!audio.src) {
 
+            if (songs.length > 0) {
 
-    songArray.forEach(
-        song => {
+                playSong(0);
 
-            const item =
-                document.createElement(
-                    "div"
-                );
+            }
 
-
-            item.className =
-                "related-song";
-
-
-            let artwork =
-                song.artworkUrl100 ||
-                "https://placehold.co/80x80?text=Music";
-
-
-            artwork =
-                artwork.replace(
-                    "100x100",
-                    "200x200"
-                );
-
-
-            item.innerHTML = `
-
-                <img
-                    src="${artwork}"
-                    alt="${escapeHTML(
-                        song.trackName
-                    )}"
-                >
-
-                <div>
-
-                    <h4>
-                        ${escapeHTML(
-                            song.trackName
-                        )}
-                    </h4>
-
-                    <p>
-                        ${escapeHTML(
-                            song.artistName
-                        )}
-                    </p>
-
-                </div>
-
-                <i class="fa-solid fa-play"></i>
-
-            `;
-
-
-            item.addEventListener(
-                "click",
-                () => {
-
-                    /*
-                       Add related song to
-                       current player list
-                    */
-
-                    songs =
-                        songArray;
-
-
-                    setPlayerSongs(
-                        songs
-                    );
-
-
-                    const index =
-                        songs.indexOf(
-                            song
-                        );
-
-
-                    loadSong(
-                        song,
-                        index
-                    );
-
-
-                    audio.play();
-
-                }
-            );
-
-
-            relatedSongs.appendChild(
-                item
-            );
+            return;
 
         }
-    );
+
+
+        if (audio.paused) {
+
+            audio.play();
+
+        }
+        else {
+
+            audio.pause();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   PLAY EVENT
+===================================================== */
+
+audio.addEventListener(
+    "play",
+    () => {
+
+        updatePlayButton(true);
+
+    }
+);
+
+
+/* =====================================================
+   PAUSE EVENT
+===================================================== */
+
+audio.addEventListener(
+    "pause",
+    () => {
+
+        updatePlayButton(false);
+
+    }
+);
+
+
+/* =====================================================
+   PLAY BUTTON ICON
+===================================================== */
+
+function updatePlayButton(
+    playing
+) {
+
+    if (playing) {
+
+        playBtn.innerHTML =
+            `<i class="fa-solid fa-pause"></i>`;
+
+    }
+    else {
+
+        playBtn.innerHTML =
+            `<i class="fa-solid fa-play"></i>`;
+
+    }
 
 }
 
 
-
 /* =====================================================
-   LYRICS
+   NEXT
 ===================================================== */
 
-async function loadLyrics(
-    artistName,
-    songTitle
-) {
+nextBtn.addEventListener(
+    "click",
+    () => {
 
-    lyrics.innerHTML = `
-        <p class="lyrics-loading">
-            Loading lyrics...
-        </p>
+        if (songs.length === 0) {
+            return;
+        }
+
+
+        currentIndex++;
+
+
+        if (
+            currentIndex >=
+            songs.length
+        ) {
+
+            currentIndex = 0;
+
+        }
+
+
+        playSong(
+            currentIndex
+        );
+
+    }
+);
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+prevBtn.addEventListener(
+    "click",
+    () => {
+
+        if (songs.length === 0) {
+            return;
+        }
+
+
+        currentIndex--;
+
+
+        if (currentIndex < 0) {
+
+            currentIndex =
+                songs.length - 1;
+
+        }
+
+
+        playSong(
+            currentIndex
+        );
+
+    }
+);
+
+
+/* =====================================================
+   BACK 10 SECONDS
+===================================================== */
+
+back10Btn.addEventListener(
+    "click",
+    () => {
+
+        if (!audio.src) {
+            return;
+        }
+
+
+        audio.currentTime =
+            Math.max(
+                0,
+                audio.currentTime - 10
+            );
+
+    }
+);
+
+
+/* =====================================================
+   FORWARD 10 SECONDS
+===================================================== */
+
+forward10Btn.addEventListener(
+    "click",
+    () => {
+
+        if (!audio.src) {
+            return;
+        }
+
+
+        audio.currentTime =
+            Math.min(
+                audio.duration,
+                audio.currentTime + 10
+            );
+
+    }
+);
+
+
+/* =====================================================
+   TIME UPDATE
+===================================================== */
+
+audio.addEventListener(
+    "timeupdate",
+    () => {
+
+        if (!audio.duration) {
+            return;
+        }
+
+
+        progress.value =
+            (
+                audio.currentTime /
+                audio.duration
+            ) * 100;
+
+
+        currentTime.textContent =
+            formatTime(
+                audio.currentTime
+            );
+
+
+        duration.textContent =
+            formatTime(
+                audio.duration
+            );
+
+    }
+);
+
+
+/* =====================================================
+   PROGRESS BAR
+===================================================== */
+
+progress.addEventListener(
+    "input",
+    () => {
+
+        if (!audio.duration) {
+            return;
+        }
+
+
+        audio.currentTime =
+            (
+                progress.value / 100
+            ) * audio.duration;
+
+    }
+);
+
+
+/* =====================================================
+   VOLUME
+===================================================== */
+
+volume.addEventListener(
+    "input",
+    () => {
+
+        audio.volume =
+            Number(volume.value);
+
+    }
+);
+
+
+/* =====================================================
+   AUTO NEXT
+===================================================== */
+
+audio.addEventListener(
+    "ended",
+    () => {
+
+        nextBtn.click();
+
+    }
+);
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+searchBtn.addEventListener(
+    "click",
+    searchMusic
+);
+
+
+searchInput.addEventListener(
+    "keydown",
+    event => {
+
+        if (event.key === "Enter") {
+
+            searchMusic();
+
+        }
+
+    }
+);
+
+
+async function searchMusic() {
+
+    const keyword =
+        searchInput.value.trim();
+
+
+    if (!keyword) {
+
+        await loadSongs();
+
+        return;
+
+    }
+
+
+    songList.innerHTML = `
+        <div class="loading">
+            Searching...
+        </div>
     `;
 
 
     const result =
-        await getLyrics(
-            artistName,
-            songTitle
+        await searchSongs(
+            keyword
         );
 
 
-    lyrics.textContent =
-        result;
+    songs =
+        result || [];
+
+
+    currentIndex = 0;
+
+
+    renderSongs();
 
 }
 
 
-
 /* =====================================================
-   LOADING
+   FAVORITE TOGGLE
 ===================================================== */
 
-function showLoading(
-    element
-) {
+function toggleFavorite(song) {
 
-    element.innerHTML = `
+    /* -----------------------------------------
+       CHECK LOGIN
+    ----------------------------------------- */
 
-        <div class="loading">
+    if (
+        typeof getCurrentUser !==
+        "function"
+    ) {
 
-            <i class="fa-solid fa-spinner fa-spin"></i>
+        console.error(
+            "auth.js has not loaded."
+        );
 
-            Loading...
+        return;
 
-        </div>
+    }
 
-    `;
+
+    const user =
+        getCurrentUser();
+
+
+    if (!user) {
+
+        alert(
+            "Please login to add favorite songs."
+        );
+
+
+        window.location.href =
+            "login.html";
+
+
+        return;
+
+    }
+
+
+    /* -----------------------------------------
+       CHECK EXISTING FAVORITE
+    ----------------------------------------- */
+
+    const favorites =
+        getFavorites();
+
+
+    const exists =
+        favorites.some(
+            favorite =>
+                favorite.trackId ===
+                song.trackId
+        );
+
+
+    if (exists) {
+
+        removeFavorite(
+            song.trackId
+        );
+
+    }
+    else {
+
+        addFavorite(
+            song
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       UPDATE UI
+    ----------------------------------------- */
+
+    renderSongs();
+
+
+    updateFavoriteButton();
+
+
+    if (
+        typeof loadFavoriteSongs ===
+        "function"
+    ) {
+
+        loadFavoriteSongs();
+
+    }
 
 }
 
 
+/* =====================================================
+   PLAYER FAVORITE BUTTON
+===================================================== */
+
+favoriteBtn.addEventListener(
+    "click",
+    () => {
+
+        if (!songs[currentIndex]) {
+
+            alert(
+                "Please select a song first."
+            );
+
+            return;
+
+        }
+
+
+        toggleFavorite(
+            songs[currentIndex]
+        );
+
+    }
+);
+
 
 /* =====================================================
-   HTML ESCAPE
+   UPDATE PLAYER FAVORITE BUTTON
+===================================================== */
+
+function updateFavoriteButton() {
+
+    const song =
+        songs[currentIndex];
+
+
+    if (!song) {
+
+        favoriteBtn.innerHTML = `
+            <i class="fa-regular fa-heart"></i>
+            Add to Favorites
+        `;
+
+        return;
+
+    }
+
+
+    const user =
+        typeof getCurrentUser ===
+        "function"
+            ? getCurrentUser()
+            : null;
+
+
+    if (!user) {
+
+        favoriteBtn.innerHTML = `
+            <i class="fa-regular fa-heart"></i>
+            Login to Save
+        `;
+
+        return;
+
+    }
+
+
+    const favorites =
+        getFavorites();
+
+
+    const exists =
+        favorites.some(
+            favorite =>
+                favorite.trackId ===
+                song.trackId
+        );
+
+
+    if (exists) {
+
+        favoriteBtn.innerHTML = `
+            <i class="fa-solid fa-heart"></i>
+            Remove from Favorites
+        `;
+
+    }
+    else {
+
+        favoriteBtn.innerHTML = `
+            <i class="fa-regular fa-heart"></i>
+            Add to Favorites
+        `;
+
+    }
+
+}
+
+
+/* =====================================================
+   FORMAT TIME
+===================================================== */
+
+function formatTime(
+    seconds
+) {
+
+    if (
+        !seconds ||
+        isNaN(seconds)
+    ) {
+
+        return "0:00";
+
+    }
+
+
+    const minutes =
+        Math.floor(
+            seconds / 60
+        );
+
+
+    const secondsPart =
+        Math.floor(
+            seconds % 60
+        );
+
+
+    return (
+        `${minutes}:` +
+        `${secondsPart
+            .toString()
+            .padStart(2, "0")}`
+    );
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
 ===================================================== */
 
 function escapeHTML(
     text
 ) {
-
-    if (!text) return "";
-
 
     return String(text)
         .replace(

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up - Music Player</title>
+
+    <link rel="icon" href="data:,">
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css">
+
+    <link
+        rel="stylesheet"
+        href="../css/auth.css">
+
+</head>
+
+
+<body class="auth-page">
+
+
+    <div class="auth-box">
+
+
+        <!-- LOGO -->
+
+        <div class="auth-logo">
+
+            <i class="fa-solid fa-headphones"></i>
+
+            <h1>
+                Music Player
+            </h1>
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        <h2>
+            Create Account
+        </h2>
+
+        <p class="auth-subtitle">
+            Sign up to save your favorite songs.
+        </p>
+
+
+        <!-- SIGN UP FORM -->
+
+        <form id="signupForm">
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label for="signupUsername">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="signupUsername"
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="signupEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="signupEmail"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="signupPassword">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="signupPassword"
+                    placeholder="At least 6 characters"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="signupConfirmPassword">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="signupConfirmPassword"
+                    placeholder="Repeat your password"
+                    autocomplete="new-password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <button
+                type="submit"
+                class="auth-submit"
+            >
+
+                <i class="fa-solid fa-user-plus"></i>
+
+                Sign Up
+
+            </button>
+
+        </form>
+
+
+        <!-- MESSAGE -->
+
+        <p
+            id="signupMessage"
+            class="auth-message">
+        </p>
+
+
+        <!-- LOGIN -->
+
+        <p class="auth-link">
+
+            Already have an account?
+
+            <a href="login.html">
+                Login
+            </a>
+
+        </p>
+
+
+        <!-- BACK -->
+
+        <a
+            href="index.html"
+            class="back-home"
+        >
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to Music Player
+
+        </a>
+
+    </div>
+
+
+    <!-- AUTH JS -->
+
+    <script src="../js/auth.js"></script>
+
+
+</body>
+
+</html>

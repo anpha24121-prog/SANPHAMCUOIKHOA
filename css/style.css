@@ -1340,3 +1340,136 @@ footer{
 
     padding: 20px;
 }
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+#authArea {
+    display: flex;
+    align-items: center;
+}
+/* ================================
+   FAVORITES
+================================ */
+
+.favorites-section {
+    width: 90%;
+    margin: 40px auto;
+}
+
+.favorites-section h2 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+#favoriteSongs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.favorite-song {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 12px;
+
+    background: #222;
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.favorite-song:hover {
+    background: #303030;
+}
+
+.favorite-song img {
+    width: 60px;
+    height: 60px;
+
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.favorite-song-info {
+    flex: 1;
+}
+
+.favorite-song-info h4 {
+    margin: 0;
+    color: white;
+}
+
+.favorite-song-info p {
+    margin: 5px 0 0;
+    color: #aaa;
+    font-size: 13px;
+}
+
+.favorite-play {
+    color: #1db954;
+    font-size: 18px;
+}
+
+.remove-favorite {
+    border: none;
+    background: transparent;
+
+    color: #ff5555;
+
+    cursor: pointer;
+
+    font-size: 18px;
+}
+.login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 18px;
+
+    background: #20c463;
+    color: white;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.login-btn:hover {
+    background: #18ad54;
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    color: white;
+}
+
+.user-menu button {
+    border: none;
+    padding: 9px 15px;
+
+    border-radius: 8px;
+
+    background: #333;
+    color: white;
+
+    cursor: pointer;
+}
+
+.user-menu button:hover {
+    background: #444;
+}

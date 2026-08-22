@@ -13,19 +13,15 @@
 
     <link rel="icon" href="data:,">
 
-    <!-- CSS -->
-    <link
-        rel="stylesheet"
-        href="../css/style.css">
-
-    <link
-        rel="stylesheet"
-        href="../css/responsive.css">
-
     <!-- Font Awesome -->
     <link
         rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/auth.css">
 
 </head>
 
@@ -33,27 +29,43 @@
 <body>
 
 
-    <!-- ================= HEADER ================= -->
+    <!-- =================================================
+         HEADER
+    ================================================== -->
 
     <header class="header">
+
+
+        <!-- LOGO -->
 
         <div class="logo">
 
             <i class="fa-solid fa-headphones"></i>
 
-            <span>Music Player</span>
+            <span>
+                Music Player
+            </span>
 
         </div>
 
+
+
+        <!-- SEARCH -->
 
         <div class="search-box">
 
             <input
                 type="text"
                 id="searchInput"
-                placeholder="Search songs or artists...">
+                placeholder="Search songs or artists..."
+                autocomplete="off"
+            >
 
-            <button id="searchBtn">
+            <button
+                id="searchBtn"
+                type="button"
+                title="Search"
+            >
 
                 <i class="fa-solid fa-magnifying-glass"></i>
 
@@ -61,18 +73,42 @@
 
         </div>
 
+
+
+        <!-- AUTH AREA -->
+
+        <div id="authArea">
+
+            <a
+                href="login.html"
+                class="login-btn"
+            >
+
+                <i class="fa-solid fa-user"></i>
+
+                Login
+
+            </a>
+
+        </div>
+
     </header>
 
 
 
-    <!-- ================= MAIN ================= -->
+    <!-- =================================================
+         MAIN
+    ================================================== -->
 
     <main class="container">
 
 
-        <!-- ================= LEFT ================= -->
+        <!-- =================================================
+             SONG LIST
+        ================================================== -->
 
         <aside class="playlist">
+
 
             <div class="playlist-title">
 
@@ -83,11 +119,14 @@
             </div>
 
 
-            <div id="songList">
-
-                <!-- Songs loaded by JavaScript -->
+            <div
+                id="songList"
+                class="song-list"
+            >
 
                 <div class="loading">
+
+                    <i class="fa-solid fa-spinner fa-spin"></i>
 
                     Loading songs...
 
@@ -95,29 +134,33 @@
 
             </div>
 
+
         </aside>
 
 
 
-        <!-- ================= CENTER ================= -->
+        <!-- =================================================
+             PLAYER
+        ================================================== -->
 
         <section class="player">
 
 
-            <!-- Album Cover -->
+            <!-- ALBUM COVER -->
 
             <div class="cover">
 
                 <img
                     id="cover"
                     src="https://placehold.co/500x500?text=Music"
-                    alt="Album Cover">
+                    alt="Album Cover"
+                >
 
             </div>
 
 
 
-            <!-- Song information -->
+            <!-- SONG INFO -->
 
             <div class="song-info">
 
@@ -129,20 +172,42 @@
                     Unknown Artist
                 </p>
 
+
+                <!-- FAVORITE -->
+
+                <button
+                    id="favoriteBtn"
+                    class="favorite-btn"
+                    type="button"
+                >
+
+                    <i class="fa-regular fa-heart"></i>
+
+                    <span>
+                        Add to Favorites
+                    </span>
+
+                </button>
+
             </div>
 
 
 
-            <!-- ================= CONTROLS ================= -->
+            <!-- =================================================
+                 CONTROLS
+            ================================================== -->
 
             <div class="controls">
 
 
-                <!-- Previous -->
+                <!-- PREVIOUS -->
 
                 <button
                     id="prevBtn"
-                    title="Previous">
+                    class="control-btn"
+                    type="button"
+                    title="Previous Song"
+                >
 
                     <i class="fa-solid fa-backward-step"></i>
 
@@ -150,24 +215,31 @@
 
 
 
-                <!-- -10 seconds -->
+                <!-- BACK 10 -->
 
                 <button
                     id="back10Btn"
-                    title="Back 10 seconds">
+                    class="control-btn"
+                    type="button"
+                    title="Back 10 seconds"
+                >
 
                     <i class="fa-solid fa-rotate-left"></i>
+
+                    <span>10</span>
 
                 </button>
 
 
 
-                <!-- Play -->
+                <!-- PLAY -->
 
                 <button
                     id="playBtn"
-                    class="play-main"
-                    title="Play">
+                    class="play-btn"
+                    type="button"
+                    title="Play / Pause"
+                >
 
                     <i class="fa-solid fa-play"></i>
 
@@ -175,11 +247,16 @@
 
 
 
-                <!-- +10 seconds -->
+                <!-- FORWARD 10 -->
 
                 <button
                     id="forward10Btn"
-                    title="Forward 10 seconds">
+                    class="control-btn"
+                    type="button"
+                    title="Forward 10 seconds"
+                >
+
+                    <span>10</span>
 
                     <i class="fa-solid fa-rotate-right"></i>
 
@@ -187,11 +264,14 @@
 
 
 
-                <!-- Next -->
+                <!-- NEXT -->
 
                 <button
                     id="nextBtn"
-                    title="Next">
+                    class="control-btn"
+                    type="button"
+                    title="Next Song"
+                >
 
                     <i class="fa-solid fa-forward-step"></i>
 
@@ -201,7 +281,9 @@
 
 
 
-            <!-- ================= PROGRESS ================= -->
+            <!-- =================================================
+                 PROGRESS
+            ================================================== -->
 
             <div class="progress-container">
 
@@ -216,7 +298,8 @@
                     min="0"
                     max="100"
                     value="0"
-                    step="0.1">
+                    step="0.1"
+                >
 
 
                 <span id="duration">
@@ -227,14 +310,16 @@
 
 
 
-            <!-- ================= VOLUME ================= -->
+            <!-- =================================================
+                 VOLUME
+            ================================================== -->
 
             <div class="volume-container">
 
                 <i
                     id="volumeIcon"
-                    class="fa-solid fa-volume-high">
-                </i>
+                    class="fa-solid fa-volume-high"
+                ></i>
 
 
                 <input
@@ -243,39 +328,50 @@
                     min="0"
                     max="1"
                     step="0.01"
-                    value="1">
+                    value="1"
+                >
 
             </div>
 
 
 
-            <!-- ================= LYRICS ================= -->
+            <!-- =================================================
+                 LYRICS
+            ================================================== -->
 
-            <div class="lyrics-section">
+            <section class="lyrics-section">
 
                 <h2>
+
                     <i class="fa-solid fa-music"></i>
+
                     Lyrics
+
                 </h2>
 
 
-                <div id="lyrics">
+                <div id="lyricsContent">
 
-                    Select a song to see lyrics.
+                    <p>
+                        Lyrics are not available from
+                        iTunes API.
+                    </p>
 
                 </div>
 
-            </div>
+            </section>
 
 
 
-            <!-- ================= RELATED ================= -->
+            <!-- =================================================
+                 RELATED SONGS
+            ================================================== -->
 
-            <div class="related-section">
+            <section class="related-section">
 
                 <h2>
 
-                    <i class="fa-solid fa-user-music"></i>
+                    <i class="fa-solid fa-user"></i>
 
                     More from this artist
 
@@ -285,29 +381,62 @@
                 <div id="relatedSongs">
 
                     <p>
-                        Select a song to see more songs
-                        from this artist.
+                        Select a song to see
+                        more songs from this artist.
                     </p>
 
                 </div>
 
-            </div>
+            </section>
 
 
         </section>
-
 
     </main>
 
 
 
-    <!-- ================= AUDIO ================= -->
+    <!-- =================================================
+         FAVORITE SONGS
+    ================================================== -->
 
-    <audio id="audio"></audio>
+    <section class="favorites-section">
+
+        <h2>
+
+            <i class="fa-solid fa-heart"></i>
+
+            My Favorite Songs
+
+        </h2>
+
+
+        <div id="favoriteSongs">
+
+            <p>
+                Login to see your favorite songs.
+            </p>
+
+        </div>
+
+    </section>
 
 
 
-    <!-- ================= FOOTER ================= -->
+    <!-- =================================================
+         AUDIO
+    ================================================== -->
+
+    <audio
+        id="audio"
+        preload="metadata">
+    </audio>
+
+
+
+    <!-- =================================================
+         FOOTER
+    ================================================== -->
 
     <footer>
 
@@ -319,9 +448,83 @@
 
 
 
+    <!-- =================================================
+         JAVASCRIPT
+    ================================================== -->
+
 <script src="../js/api.js"></script>
-<script src="../js/player.js"></script>
 <script src="../js/app.js"></script>
+<script src="../js/auth.js"></script>
+
+
+
+    <!-- =================================================
+         AUTH UI
+    ================================================== -->
+
+    <script>
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const authArea =
+                    document.getElementById(
+                        "authArea"
+                    );
+
+
+                const user =
+                    getCurrentUser();
+
+
+                if (user) {
+
+                    authArea.innerHTML = `
+
+                        <div class="user-menu">
+
+                            <span class="username">
+
+                                <i class="fa-solid fa-user"></i>
+
+                                ${user.username}
+
+                            </span>
+
+
+                            <button
+                                id="logoutBtn"
+                                type="button"
+                            >
+
+                                Logout
+
+                            </button>
+
+                        </div>
+
+                    `;
+
+
+                    document
+                        .getElementById("logoutBtn")
+                        .addEventListener(
+                            "click",
+                            function () {
+
+                                logout();
+
+                            }
+                        );
+
+                }
+
+            }
+        );
+
+    </script>
+
 
 </body>
 
